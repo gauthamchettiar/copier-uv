@@ -1,0 +1,130 @@
+# Contributing to {{ project_name }}
+
+Thank you for your interest in contributing to {{ project_name }}!
+
+## Development Setup
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd {{ project_slug }}
+```
+
+2. Install dependencies using uv:
+```bash
+uv sync --dev
+```
+
+## Code Quality
+
+This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formatting.
+
+### Linting
+
+Run the linter to check for issues:
+```bash
+uv run ruff check .
+```
+
+Fix auto-fixable issues:
+```bash
+uv run ruff check --fix .
+```
+
+### Formatting
+
+Check formatting:
+```bash
+uv run ruff format --check .
+```
+
+Format code:
+```bash
+uv run ruff format .
+```
+
+### Run All Checks
+
+Before committing, run both linting and formatting:
+```bash
+uv run ruff check --fix . && uv run ruff format .
+```
+
+## Testing
+
+Run tests with pytest:
+```bash
+uv run pytest
+```
+
+Run tests with coverage:
+```bash
+uv run pytest --cov={{ project_slug }} --cov-report=html
+```
+
+## Type Checking
+
+Run type checking with mypy:
+```bash
+uv run mypy src/{{ project_slug }}
+```
+
+## Pre-commit Hooks (Recommended)
+
+This project uses pre-commit hooks to automatically run Ruff checks before each commit.
+
+### Setup
+
+Pre-commit is already included in dev dependencies. After running `uv sync --dev`, install the hooks:
+
+```bash
+uv run pre-commit install
+```
+
+### How It Works
+
+Once installed, pre-commit will automatically run before each commit:
+
+1. **You commit**: `git commit -m "your message"`
+2. **Hooks run**: Ruff linter and formatter check your changes
+3. **If changes are made**:
+   - Files are auto-fixed and saved
+   - Commit fails with message "Files were modified by this hook"
+   - Stage the changes: `git add .`
+   - Commit again: `git commit -m "your message"`
+4. **If no issues**: Commit succeeds immediately
+
+### Manual Testing
+
+Test all hooks without committing:
+```bash
+uv run pre-commit run --all-files
+```
+
+### Skipping Hooks (Not Recommended)
+
+In rare cases, you can skip hooks with:
+```bash
+git commit --no-verify
+```
+⚠️ Only use this when absolutely necessary, as it bypasses all quality checks.
+
+## Pull Request Process
+
+1. Create a new branch for your feature or bugfix
+2. Make your changes
+3. Run all code quality checks
+4. Commit your changes with a clear message
+5. Push to your fork and submit a pull request
+
+## Code Style
+
+- Follow PEP 8 guidelines (enforced by Ruff)
+- Use type hints where appropriate
+- Write docstrings for public functions and classes (Google style)
+- Keep functions focused and concise (max complexity: 10)
+- Write tests for new features
+
+## Questions?
+
+If you have questions, please open an issue for discussion.

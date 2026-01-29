@@ -16,7 +16,7 @@ project_slug:
 project_description:
   type: str
   help: Project description
-  default: Add your description here
+  default: Add your description here.
 
 author_name:
   type: str
