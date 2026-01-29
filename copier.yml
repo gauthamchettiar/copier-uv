@@ -1,0 +1,57 @@
+# Copier template configuration
+_templates_suffix: .jinja
+_subdirectory: project
+_answers_file: .copier-answers.yml
+
+project_name:
+  type: str
+  help: What is your project name?
+  default: my-project
+
+project_slug:
+  type: str
+  help: What is the Python package name (slug)?
+  default: "{{ project_name | lower | replace('-', '_') | replace(' ', '_') }}"
+
+project_description:
+  type: str
+  help: Project description
+  default: Add your description here
+
+author_name:
+  type: str
+  help: Author name
+  default: "Your Name"
+
+author_email:
+  type: str
+  help: Author email
+  default: "your.email@example.com"
+
+python_version:
+  type: str
+  help: Minimum Python version
+  default: "3.10"
+  choices:
+    - "3.10"
+    - "3.11"
+    - "3.12"
+    - "3.13"
+    - "3.14"
+
+license:
+  type: str
+  help: Choose a license
+  default: "MIT"
+  choices:
+    - "MIT"
+    - "Apache-2.0"
+    - "BSD-3-Clause"
+    - "GPL-3.0"
+    - "MPL-2.0"
+
+year:
+  type: str
+  help: Copyright year
+  default: "2026"
+
