@@ -1,0 +1,8 @@
+import pytest
+
+from {{ project_slug }}.calculator import Calculator
+
+
+@pytest.fixture
+def calculator() -> Calculator:
+    return Calculator()

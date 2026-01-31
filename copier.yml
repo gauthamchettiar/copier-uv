@@ -3,6 +3,11 @@ _templates_suffix: .jinja
 _subdirectory: project
 _answers_file: .copier-answers.yml
 
+master_versions:
+  type: json
+  when: false
+  default: ["3.10", "3.11", "3.12", "3.13", "3.14"] # make sure to keep them sorted
+
 project_name:
   type: str
   help: What is your project name?
@@ -28,16 +33,22 @@ author_email:
   help: Author email
   default: "your.email@example.com"
 
-python_version:
+min_python_version:
   type: str
   help: Minimum Python version
-  default: "3.10"
-  choices:
-    - "3.10"
-    - "3.11"
-    - "3.12"
-    - "3.13"
-    - "3.14"
+  default: "{{ master_versions[-1] }}"
+  choices: "{{ master_versions }}"
+
+supported_python_versions:
+  type: json
+  when: false
+  default: >-
+    {% set ns = namespace(found=false, versions=[]) %}
+    {% for v in master_versions %}
+      {% if v == min_python_version %}{% set ns.found = true %}{% endif %}
+      {% if ns.found %}{% set ns.versions = ns.versions + [v] %}{% endif %}
+    {% endfor %}
+    {{ ns.versions | tojson }}
 
 license:
   type: str
@@ -55,3 +66,10 @@ year:
   help: Copyright year
   default: "2026"
 
+example:
+  type: str
+  help: Choose an example module
+  default: "hello"
+  choices:
+    - "hello"
+    - "calculator"

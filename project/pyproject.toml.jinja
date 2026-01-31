@@ -3,10 +3,11 @@ name = "{{ project_slug }}"
 version = "0.1.0"
 description = "{{ project_description }}"
 readme = "README.md"
+license = "{{ license }}"
 authors = [
     { name = "{{ author_name }}", email = "{{ author_email }}" }
 ]
-requires-python = ">={{ python_version }}"
+requires-python = ">= {{ min_python_version }}"
 dependencies = []
 
 [build-system]
@@ -14,49 +15,33 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.ruff]
-target-version = "py{{ python_version | replace('.', '') }}"
-line-length = 88
-fix = true
+target-version = "py{{ min_python_version | replace('.', '') }}"
+line-length = 90
 show-fixes = true
 respect-gitignore = true
 
 [tool.ruff.lint]
-select = [
-    "F",     # Pyflakes
-    "E",     # pycodestyle errors
-    "W",     # pycodestyle warnings
-    "C90",   # mccabe
-    "I",     # isort
-    "N",     # pep8-naming
-    "D",     # pydocstyle
-    "UP",    # pyupgrade
-    "S",     # flake8-bandit
-    "B",     # flake8-bugbear
-    "A",     # flake8-builtins
-    "C4",    # flake8-comprehensions
-    "PT",    # flake8-pytest-style
-    "ERA",   # eradicate
-    "PL",    # Pylint
-    "RUF",   # Ruff-specific rules
-]
+select = [ "ALL" ]
 ignore = [
     "D100",  # missing module docstring
     "D104",  # missing package docstring
     "D203",  # one-blank-line-before-class (conflicts with D211)
     "D213",  # multi-line-summary-second-line (conflicts with D212)
+    "COM812",  # missing trailing comma in a collection
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = [
     "S101",   # Use of assert detected
     "D",      # pydocstyle
+    "PLR0913",  # Too many arguments in function definition
 ]
 "__init__.py" = ["F401"]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
 force-sort-within-sections = true
-known-first-party = ["my_project"]
+known-first-party = ["{{ project_slug }}"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -71,22 +56,73 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.pytest.ini_options]
+minversion = "9.0"
+addopts = "-ra -q"
 testpaths = ["tests"]
 python_files = "test_*.py"
 python_classes = "Test*"
 python_functions = "test_*"
-addopts = [
-    "--cov={{ project_slug }}",
-    "--cov-report=term-missing",
-    "--cov-report=html",
-    "--cov-fail-under=80",
-    "-v",
+
+# when you add markers here, remember to
+#   add below in poe test-unit task as well
+markers = [
+    "integration: integration tests",
 ]
+
+[tool.pyright]
+include = ["src"]
+
+pythonVersion = "{{ min_python_version }}"
+typeCheckingMode = "strict"
+
+reportMissingImports = true
+reportMissingTypeStubs = false
+reportUnusedVariable = true
+reportUnusedFunction = true
+
+venvPath = "."
+venv = ".venv"
 
 [dependency-groups]
 dev = [
+    "poethepoet>=0.40.0",
     "pre-commit>=4.5.1",
+    "pyright>=1.1.408",
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
     "ruff>=0.14.14",
 ]
+
+[tool.poe]
+executor.type = "uv"
+
+[tool.poe.tasks]
+# Linting, Formatting and Type Checking Tasks
+lint = {cmd =  "ruff check src tests", help = "Run ruff lint checks"}
+lint-fix = {cmd = "ruff check src tests --fix", help = "Fix ruff lint issues"}
+
+format = {cmd = "ruff format src tests", help = "Format code using ruff"}
+format-check = {cmd = "ruff format src tests --check", help = "Check code formatting using ruff"}
+
+type-check = {cmd = "pyright", help = "Run type checking using pyright"}
+
+# Testing Tasks
+test-unit = {cmd = """
+                pytest \
+                    -m 'not integration' \
+                    --cov={{ project_slug }} \
+                    --cov-report=term-missing \
+                    --cov-fail-under=80
+                    """, help = "Run unit tests"} # all unmarked tests
+test-integration = {cmd = "pytest -m 'integration'", help = "Run integration tests"}
+
+# Multi Version Testing
+{%- for v in supported_python_versions %}
+test-py{{ v | replace('.', '') }} = { cmd = "pytest", executor = { isolated = true, python = "{{ v }}" } }
+{%- endfor %}
+test-pyall = { parallel = [{%- for v in supported_python_versions %}"test-py{{ v | replace('.', '') }}"{{ "," if not loop.last }}{%- endfor %}] }
+
+# Aggregate Tasks
+check = {sequence = ["lint", "format-check", "type-check", "test-unit"], help = "Run all checks (linting, formatting, type checking)"}
+fix = {sequence = ["format", "lint-fix"], help = "Fix linting and formatting issues"}
+ci = {sequence = ["check", "test-integration"], help = "Run all checks and tests for CI"}

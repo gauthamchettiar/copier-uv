@@ -1,0 +1,45 @@
+import os
+
+
+class Calculator:
+    """A simple calculator class for basic arithmetic operations."""
+
+    def __init__(self) -> None:
+        """Initialize the calculator with an empty history."""
+        self._history: list[float] = []
+
+    @classmethod
+    def add(cls, a: int, b: int) -> int:
+        """Add two integers and return the sum."""
+        return a + b
+
+    @classmethod
+    def divide(cls, a: int, b: int) -> float:
+        """Divide two integers and return the quotient."""
+        if b == 0:
+            msg = "Division by zero"
+            raise ValueError(msg)
+        return a / b
+
+    @classmethod
+    def get_multiplier(cls) -> int:
+        """Get the multiplier from environment variable, default to 1."""
+        value = os.getenv("CALC_MULTIPLIER", "1")
+        try:
+            return int(value)
+        except ValueError:
+            return 1
+
+    def multiply(self, a: int, b: int) -> int:
+        """Multiply two integers and apply the multiplier from env."""
+        result = a * b * self.get_multiplier()
+        self._history.append(result)
+        return result
+
+    def get_history(self) -> list[float]:
+        """Get the calculation history."""
+        return self._history.copy()
+
+    def clear_history(self) -> None:
+        """Clear the calculation history."""
+        self._history.clear()

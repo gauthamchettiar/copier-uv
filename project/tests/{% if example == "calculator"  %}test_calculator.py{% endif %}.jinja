@@ -1,0 +1,117 @@
+import pytest
+
+from {{ project_slug }}.calculator import Calculator
+from tests.types import CalculatorFixture
+
+DEFAULT_MULTIPLY_RESULT = 6
+TEST_MULTIPLIER = 5
+INTEGRATION_MULTIPLIER_RESULT = 24
+HISTORY_LENGTH = 2
+
+
+def test_add(calculator: CalculatorFixture) -> None:
+    assert calculator.add(2, 3) == 2 + 3
+
+
+@pytest.mark.parametrize(
+    ("a", "b", "expected"),
+    [
+        (10, 2, 5),
+        (9, 3, 3),
+        (1, 1, 1),
+    ],
+)
+def test_divide(calculator: CalculatorFixture, a: int, b: int, expected: int) -> None:
+    assert calculator.divide(a, b) == expected
+
+
+def test_divide_by_zero(calculator: CalculatorFixture) -> None:
+    with pytest.raises(ValueError, match="Division by zero"):
+        calculator.divide(1, 0)
+
+
+@pytest.mark.parametrize(
+    ("multiplier", "a", "b", "expected"),
+    [
+        (1, 2, 3, 6),
+        (2, 2, 3, 12),
+        (0, 2, 3, 0),
+    ],
+)
+def test_multiply(
+    calculator: CalculatorFixture,
+    monkeypatch: pytest.MonkeyPatch,
+    multiplier: int,
+    a: int,
+    b: int,
+    expected: int,
+) -> None:
+    monkeypatch.setenv("CALC_MULTIPLIER", str(multiplier))
+    assert calculator.multiply(a, b) == expected
+
+
+def test_multiply_default_multiplier(
+    calculator: CalculatorFixture, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("CALC_MULTIPLIER", raising=False)
+    assert calculator.multiply(2, 3) == DEFAULT_MULTIPLY_RESULT  # 2*3*1
+
+
+def test_multiply_invalid_multiplier(
+    calculator: CalculatorFixture, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("CALC_MULTIPLIER", "invalid")
+    assert calculator.multiply(2, 3) == DEFAULT_MULTIPLY_RESULT  # defaults to 1
+
+
+@pytest.mark.integration
+def test_multiply_integration(calculator: CalculatorFixture) -> None:
+    # Test with actual env, assuming CALC_MULTIPLIER is not set
+    result = calculator.multiply(2, 3)
+    assert result == DEFAULT_MULTIPLY_RESULT
+
+
+@pytest.mark.integration
+def test_env_integration(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CALC_MULTIPLIER", "2")
+    calc = Calculator()
+    result = calc.multiply(3, 4)
+    assert result == INTEGRATION_MULTIPLIER_RESULT  # 3*4*2
+
+
+@pytest.mark.integration
+def test_history_integration() -> None:
+    calc = Calculator()
+    calc.multiply(1, 2)
+    calc.multiply(3, 4)
+    history = calc.get_history()
+    assert len(history) == HISTORY_LENGTH
+    assert history == [2, 12]  # assuming multiplier 1
+
+
+def test_history(calculator: CalculatorFixture) -> None:
+    calculator.multiply(2, 3)
+    calculator.multiply(4, 5)
+    history = calculator.get_history()
+    assert history == [6, 20]
+
+
+def test_clear_history(calculator: CalculatorFixture) -> None:
+    calculator.multiply(2, 3)
+    calculator.clear_history()
+    assert calculator.get_history() == []
+
+
+def test_get_multiplier(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CALC_MULTIPLIER", str(TEST_MULTIPLIER))
+    assert Calculator.get_multiplier() == TEST_MULTIPLIER
+
+
+def test_get_multiplier_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("CALC_MULTIPLIER", raising=False)
+    assert Calculator.get_multiplier() == 1
+
+
+def test_get_multiplier_invalid(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CALC_MULTIPLIER", "invalid")
+    assert Calculator.get_multiplier() == 1
