@@ -6,7 +6,7 @@ _answers_file: .copier-answers.yml
 master_versions:
   type: json
   when: false
-  default: ["3.10", "3.11", "3.12", "3.13", "3.14"] # make sure to keep them sorted
+  default: ["3.10", "3.11", "3.12", "3.13"] # make sure to keep them sorted
 
 project_name:
   type: str
