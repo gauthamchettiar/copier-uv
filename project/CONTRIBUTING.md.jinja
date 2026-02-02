@@ -1,0 +1,53 @@
+# Contributing
+
+Thanks for helping improve **{{ project_name }}**.
+
+## Quick start
+
+### Prerequisites
+
+- Python {{ min_python_version }}+
+- [`uv`](https://docs.astral.sh/uv/)
+
+### Setup
+
+```bash
+uv sync --all-groups
+```
+
+### Run the usual checks
+
+```bash
+poe check
+```
+
+### Run tests
+
+```bash
+poe test-unit
+```
+
+### Build docs
+
+```bash
+uv sync --group docs
+poe docs
+```
+
+## Development guidelines
+
+- Keep changes focused and add tests when it’s practical.
+- Run formatting and linting before opening a PR:
+
+```bash
+poe fix
+```
+
+## Reporting issues
+
+- Bug reports and feature requests are welcome.
+- Include steps to reproduce and the output of `poe check`.
+
+## Code of conduct
+
+By participating, you agree to follow the Code of Conduct in CODE_OF_CONDUCT.md.

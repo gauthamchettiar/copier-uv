@@ -94,6 +94,11 @@ dev = [
     "pytest-cov>=7.0.0",
     "ruff>=0.14.14",
 ]
+docs = [
+    "mkdocs>=1.6",
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.29",
+]
 
 [tool.poe]
 executor.type = "uv"
@@ -111,6 +116,10 @@ type-check = {cmd = "pyright", help = "Run type checking using pyright"}
 # Security Tasks
 security-bandit = {cmd = "bandit -r src -ll", help = "Run bandit security checks"}
 security-audit = {cmd = "pip-audit", help = "Run pip-audit security checks"}
+
+# Documentation Tasks
+docs-serve = {cmd = "mkdocs serve --clean", help = "Serve documentation locally"}
+docs-build = {cmd = "mkdocs build --clean", help = "Build documentation site"}
 
 
 # Testing Tasks
@@ -135,4 +144,5 @@ clean = {cmd = "rm -rf build dist .pytest_cache .mypy_cache .ruff_cache .pytest_
 check = {sequence = ["lint", "format-check", "type-check", "test-unit"], help = "Run all checks (linting, formatting, type checking)"}
 fix = {sequence = ["format", "lint-fix"], help = "Fix linting and formatting issues"}
 security = {sequence = ["security-bandit", "security-audit"], help = "Run all security checks"}
-ci = {sequence = ["check", "test-integration", "security"], help = "Run all checks and tests for CI"}
+docs = {sequence = ["test-unit", "docs-build"], help = "Build the documentation site"}
+ci = {sequence = ["check", "test-integration", "security", "docs"], help = "Run all checks and tests for CI"}

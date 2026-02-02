@@ -2,6 +2,10 @@
 _templates_suffix: .jinja
 _subdirectory: project
 _answers_file: .copier-answers.yml
+_jinja_extensions:
+  - copier_template_extensions.TemplateExtensionLoader
+  - extensions.py:GitExtension
+  - extensions.py:SlugifyExtension
 
 master_versions:
   type: json
@@ -11,7 +15,7 @@ master_versions:
 project_name:
   type: str
   help: What is your project name?
-  default: my-project
+  default: "{{ _copier_conf.dst_path.name }}"
 
 project_slug:
   type: str
@@ -21,17 +25,39 @@ project_slug:
 project_description:
   type: str
   help: Project description
-  default: Add your description here.
+  default: "A short description of the project."
 
 author_name:
   type: str
   help: Author name
-  default: "Your Name"
+  default: "{{ 'Your Name' | git_user_name }}"
 
 author_email:
   type: str
   help: Author email
-  default: "your.email@example.com"
+  default: "{{ 'your.name@example.com' | git_user_email }}"
+
+author_username:
+  type: str
+  help: Author Repository username (for example, your GitHub username)
+  default: "{{ author_name | lower | replace(' ', '') }}"
+
+repository_provider:
+  type: str
+  help: Your repository provider
+  default: github.com
+  choices:
+  - github.com
+
+repository_namespace:
+  type: str
+  help: Your repository namespace (defaults to your repository username)
+  default: "{{ author_username }}"
+
+repository_name:
+  type: str
+  help: Your repository name
+  default: "{{ project_slug | slugify }}"
 
 min_python_version:
   type: str
@@ -61,10 +87,10 @@ license:
     - "GPL-3.0"
     - "MPL-2.0"
 
-year:
+copyright_year:
   type: str
   help: Copyright year
-  default: "2026"
+  default: "{{ '%Y' | strftime }}"
 
 example:
   type: str

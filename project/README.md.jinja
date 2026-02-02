@@ -1,0 +1,33 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+Python package `{{ project_slug }}` (managed with `uv`).
+
+## Installation
+
+### Using `uv`
+
+Create a virtual environment, install dependencies, and install the project:
+
+```bash
+uv sync
+```
+
+This creates `.venv/` and installs the project in editable mode.
+
+### Run
+
+```bash
+uv run python -c "import {{ project_slug }}; print('{{ project_name }} is installed')"
+```
+
+## Development
+
+Run the full local check suite:
+
+```bash
+uv sync --all-groups
+poe check
+```
+
