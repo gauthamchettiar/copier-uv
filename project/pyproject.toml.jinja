@@ -85,6 +85,8 @@ venv = ".venv"
 
 [dependency-groups]
 dev = [
+    "bandit>=1.9.3",
+    "pip-audit>=2.10.0",
     "poethepoet>=0.40.0",
     "pre-commit>=4.5.1",
     "pyright>=1.1.408",
@@ -106,11 +108,17 @@ format-check = {cmd = "ruff format src tests --check", help = "Check code format
 
 type-check = {cmd = "pyright", help = "Run type checking using pyright"}
 
+# Security Tasks
+security-bandit = {cmd = "bandit -r src -ll", help = "Run bandit security checks"}
+security-audit = {cmd = "pip-audit", help = "Run pip-audit security checks"}
+
+
 # Testing Tasks
 test-unit = {cmd = """
                 pytest \
                     -m 'not integration' \
                     --cov={{ project_slug }} \
+                    --cov-report=html:htmlcov \
                     --cov-report=term-missing \
                     --cov-fail-under=80
                     """, help = "Run unit tests"} # all unmarked tests
@@ -123,6 +131,8 @@ test-py{{ v | replace('.', '') }} = { cmd = "pytest", executor = { isolated = tr
 test-pyall = { parallel = [{%- for v in supported_python_versions %}"test-py{{ v | replace('.', '') }}"{{ "," if not loop.last }}{%- endfor %}] }
 
 # Aggregate Tasks
+clean = {cmd = "rm -rf build dist .pytest_cache .mypy_cache .ruff_cache .pytest_cache .tox .venv site/", help = "Clean build artifacts"}
 check = {sequence = ["lint", "format-check", "type-check", "test-unit"], help = "Run all checks (linting, formatting, type checking)"}
 fix = {sequence = ["format", "lint-fix"], help = "Fix linting and formatting issues"}
-ci = {sequence = ["check", "test-integration"], help = "Run all checks and tests for CI"}
+security = {sequence = ["security-bandit", "security-audit"], help = "Run all security checks"}
+ci = {sequence = ["check", "test-integration", "security"], help = "Run all checks and tests for CI"}
