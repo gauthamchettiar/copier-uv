@@ -2,6 +2,12 @@
 
 Thanks for helping improve **{{ project_name }}**.
 
+This project uses:
+
+- [`uv`](https://docs.astral.sh/uv/) for Python + dependency management
+- [`poethepoet`](https://github.com/nat-n/poethepoet) tasks (run via `poe`)
+- `pre-commit` to run fast checks before commits
+
 ## Quick start
 
 ### Prerequisites
@@ -15,32 +21,158 @@ Thanks for helping improve **{{ project_name }}**.
 uv sync --all-groups
 ```
 
+Notes:
+
+- `--all-groups` installs both the `dev` and `docs` dependency groups.
+- If you only want the development tooling (no docs), you can use:
+
+```bash
+uv sync --group dev
+```
+
 ### Run the usual checks
 
 ```bash
-poe check
+uv run poe check
 ```
+
+This is the “default” local check and includes linting, formatting checks, type
+checking, and unit tests.
 
 ### Run tests
 
 ```bash
-poe test-unit
+uv run poe test-unit
+```
+
+To run integration tests (if any):
+
+```bash
+uv run poe test-integration
+```
+
+To run the test suite across all supported Python versions (slower):
+
+```bash
+uv run poe test-pyall
 ```
 
 ### Build docs
 
 ```bash
 uv sync --group docs
-poe docs
+uv run poe docs
 ```
+
+To serve docs locally:
+
+```bash
+uv run poe docs-serve
+```
+
+To build docs only (no tests):
+
+```bash
+uv run poe docs-build
+```
+
+## Recommended workflow (what to run, in what order)
+
+1. Install dependencies:
+
+```bash
+uv sync --all-groups
+```
+
+2. Install pre-commit hooks (once):
+
+```bash
+uv run pre-commit install
+```
+
+3. Make your change.
+
+4. Auto-fix formatting + lint issues:
+
+```bash
+uv run poe fix
+```
+
+5. Run the standard checks:
+
+```bash
+uv run poe check
+```
+
+6. If your change touches docs, run:
+
+```bash
+uv run poe docs-build
+```
+
+7. If your change might affect integration behavior, run:
+
+```bash
+uv run poe test-integration
+```
+
+## Commands and what they do
+
+List all tasks:
+
+```bash
+uv run poe -l
+```
+
+Commonly used tasks:
+
+- `uv run poe lint`: Ruff lint checks on `src/` and `tests/`.
+- `uv run poe lint-fix`: Ruff lint checks with auto-fixes.
+- `uv run poe format`: Format code using Ruff.
+- `uv run poe format-check`: Verify formatting without changing files.
+- `uv run poe type-check`: Static typing via `pyright` (strict).
+- `uv run poe test-unit`: Unit tests (everything not marked `integration`) with coverage.
+- `uv run poe test-integration`: Tests marked `integration`.
+- `uv run poe test-pyall`: Run `pytest` under multiple Python versions using uv isolated envs.
+- `uv run poe security`: Run `bandit` (source scan) and `pip-audit` (dependency audit).
+- `uv run poe docs`: Run unit tests, then build docs.
+- `uv run poe docs-serve`: Serve docs locally via MkDocs.
+- `uv run poe clean`: Remove build/test caches and generated artifacts.
+- `uv run poe gen-changelog`: Regenerate CHANGELOG.md from git history.
+
+Aggregates:
+
+- `uv run poe check`: `lint` → `format-check` → `type-check` → `test-unit`.
+- `uv run poe fix`: `format` → `lint-fix`.
+- `uv run poe ci`: Full suite intended for CI: `check` → `test-integration` → `security` → `docs`.
 
 ## Development guidelines
 
 - Keep changes focused and add tests when it’s practical.
-- Run formatting and linting before opening a PR:
+
+If you want the exact same checks that CI runs, you can use:
 
 ```bash
-poe fix
+uv run poe ci
+```
+
+If you want to also run multi-version tests like CI does:
+
+```bash
+uv run poe test-pyall
+```
+
+## pre-commit
+
+`pre-commit` runs quick, local checks before you commit.
+
+It includes basic file hygiene checks and runs `uv run poe pre-commit` (Ruff
+format + Ruff lint fixes).
+
+To run all hooks manually:
+
+```bash
+uv run pre-commit run --all-files
 ```
 
 ## Reporting issues
