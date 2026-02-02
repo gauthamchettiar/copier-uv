@@ -1,9 +1,18 @@
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-toml
+
   - repo: local
     hooks:
-      - id: poe-check
-        name: poe check
-        entry: uv run poe check
+      - id: poe-pre-commit
+        name: poe pre-commit (format + lint-fix)
+        entry: uv run poe pre-commit
         language: system
         pass_filenames: false
         always_run: true

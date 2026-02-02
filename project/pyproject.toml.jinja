@@ -86,6 +86,7 @@ venv = ".venv"
 [dependency-groups]
 dev = [
     "bandit>=1.9.3",
+    "git-changelog>=2.7.1",
     "pip-audit>=2.10.0",
     "poethepoet>=0.40.0",
     "pre-commit>=4.5.1",
@@ -121,6 +122,9 @@ security-audit = {cmd = "pip-audit", help = "Run pip-audit security checks"}
 docs-serve = {cmd = "mkdocs serve --clean", help = "Serve documentation locally"}
 docs-build = {cmd = "mkdocs build --clean", help = "Build documentation site"}
 
+# Generation tasks
+gen-changelog = "git-changelog -o CHANGELOG.md"
+
 
 # Testing Tasks
 test-unit = {cmd = """
@@ -141,8 +145,10 @@ test-pyall = { parallel = [{%- for v in supported_python_versions %}"test-py{{ v
 
 # Aggregate Tasks
 clean = {cmd = "rm -rf build dist .pytest_cache .mypy_cache .ruff_cache .pytest_cache .tox .venv site/", help = "Clean build artifacts"}
+pre-commit = {sequence = ["format", "lint-fix"], help = "Auto-fix formatting and lint issues (for pre-commit)"}
 check = {sequence = ["lint", "format-check", "type-check", "test-unit"], help = "Run all checks (linting, formatting, type checking)"}
 fix = {sequence = ["format", "lint-fix"], help = "Fix linting and formatting issues"}
+gen = {sequence = ["gen-changelog"], help = "Generate project files"}
 security = {sequence = ["security-bandit", "security-audit"], help = "Run all security checks"}
 docs = {sequence = ["test-unit", "docs-build"], help = "Build the documentation site"}
-ci = {sequence = ["check", "test-integration", "security", "docs"], help = "Run all checks and tests for CI"}
+ci = {sequence = ["check", "test-integration", "security", "docs-build"], help = "Run all checks and tests for CI"}
