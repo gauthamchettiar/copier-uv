@@ -53,4 +53,3 @@ When you run the copy command, you'll be asked the following questions:
 
 8. **Copyright year**
    - Default: `2026`
-
