@@ -86,6 +86,7 @@ venv = ".venv"
 [dependency-groups]
 dev = [
     "bandit>=1.9.3",
+    "detect-secrets>=1.5.0",
     "git-changelog>=2.7.1",
     "pip-audit>=2.10.0",
     "poethepoet>=0.40.0",
@@ -125,17 +126,12 @@ docs-build = {cmd = "mkdocs build --clean", help = "Build documentation site"}
 # Generation tasks
 gen-changelog = "git-changelog -o CHANGELOG.md"
 
-
 # Testing Tasks
-test-unit = {cmd = """
-                pytest \
-                    -m 'not integration' \
-                    --cov={{ project_slug }} \
-                    --cov-report=html:htmlcov \
-                    --cov-report=term-missing \
-                    --cov-fail-under=80
-                    """, help = "Run unit tests"} # all unmarked tests
+test-unit = {cmd = "pytest -m 'not integration'", help = "Run unit tests"} # all unmarked tests
 test-integration = {cmd = "pytest -m 'integration'", help = "Run integration tests"}
+
+test-cov-check = {cmd = "pytest --cov={{ project_slug }} --cov-report=html:htmlcov --cov-report=term-missing --cov-fail-under=80", help = "Run tests with coverage"}
+test-cov-gen = {cmd = "pytest --cov={{ project_slug }} --cov-report=html:htmlcov --cov-report=term-missing", help = "Run tests to generate coverage report"}
 
 # Multi Version Testing
 {%- for v in supported_python_versions %}
@@ -146,9 +142,9 @@ test-pyall = { parallel = [{%- for v in supported_python_versions %}"test-py{{ v
 # Aggregate Tasks
 clean = {cmd = "rm -rf build dist .pytest_cache .mypy_cache .ruff_cache .pytest_cache .tox .venv site/", help = "Clean build artifacts"}
 pre-commit = {sequence = ["format", "lint-fix"], help = "Auto-fix formatting and lint issues (for pre-commit)"}
-check = {sequence = ["lint", "format-check", "type-check", "test-unit"], help = "Run all checks (linting, formatting, type checking)"}
+check = {sequence = ["lint", "format-check", "type-check", "test-cov-check"], help = "Run all checks (linting, formatting, type checking)"}
 fix = {sequence = ["format", "lint-fix"], help = "Fix linting and formatting issues"}
 gen = {sequence = ["gen-changelog"], help = "Generate project files"}
 security = {sequence = ["security-bandit", "security-audit"], help = "Run all security checks"}
-docs = {sequence = ["test-unit", "docs-build"], help = "Build the documentation site"}
-ci = {sequence = ["check", "test-integration", "security", "docs-build"], help = "Run all checks and tests for CI"}
+docs = {sequence = ["test-cov-gen", "docs-build"], help = "Build the documentation site"}
+ci = {sequence = ["check", "security", "docs-build"], help = "Run all checks and tests for CI"}
