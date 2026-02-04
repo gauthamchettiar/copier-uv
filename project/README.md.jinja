@@ -21,12 +21,3 @@ This creates `.venv/` and installs the project in editable mode.
 ```bash
 uv run python -c "import {{ project_slug }}; print('{{ project_name }} is installed')"
 ```
-
-## Development
-
-Run the full local check suite:
-
-```bash
-uv sync --all-groups
-uv run poe check
-```

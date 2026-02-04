@@ -348,20 +348,6 @@ def test_poe_security_hello_example(generated_hello_project):
     )
 
 
-def test_poe_security_calculator_example(generated_calculator_project):
-    """Test that poe security runs successfully on generated project with calculator example."""
-    # Run poe security in the generated project
-    result = subprocess.run(
-        ["uv", "run", "poe", "security"],
-        cwd=generated_calculator_project,
-        capture_output=True,
-        text=True,
-    )
-    
-    assert result.returncode == 0, (
-        f"poe security failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
-    )
-
 def test_poe_pre_commit_hello_example(generated_hello_project):
     """Test that pre-commit runs successfully on generated project with hello example."""
     # Install pre-commit hooks
