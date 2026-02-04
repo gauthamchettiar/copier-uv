@@ -16,5 +16,15 @@
       "matchManagers": ["github-actions"],
       "groupName": "github-actions"
     }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^project/pyproject\\.toml\\.jinja$"],
+      "matchStrings": [
+        "\"(?<depName>[a-zA-Z0-9._-]+)(?:[<>=!~^\\s]*)(?<currentValue>[0-9.]+)\""
+      ],
+      "datasourceTemplate": "pypi"
+    }
   ]
 }
