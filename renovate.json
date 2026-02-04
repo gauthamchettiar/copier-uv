@@ -1,0 +1,20 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "schedule": ["before 4am on Monday"],
+  "packageRules": [
+    {
+      "matchManagers": ["pep621"],
+      "groupName": "python-dependencies"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions"
+    }
+  ]
+}
