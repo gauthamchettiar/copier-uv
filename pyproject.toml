@@ -14,8 +14,8 @@ build-backend = "hatchling.build"
 packages = ["tests"]
 only-include = ["tests", "copier.yml", "extensions.py", "project"]
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "copier>=9.11.3",
     "copier-templates-extensions>=0.3.2",
     "pytest>=9.0.2",
