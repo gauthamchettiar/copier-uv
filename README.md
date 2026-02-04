@@ -19,6 +19,17 @@ or if you have a local copy of the template:
 copier copy /path/to/copier-uv <destination-folder>
 ```
 
+## Development
+
+### Running Tests
+
+This template includes tests to verify that the copier template works correctly. To run the tests:
+
+```bash
+uv sync          # Install dependencies (first time only)
+uv run pytest    # Run tests
+```
+
 ## Questions
 
 When you run the copy command, you'll be asked the following questions:
