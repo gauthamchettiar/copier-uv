@@ -22,7 +22,7 @@
       "customType": "regex",
       "fileMatch": ["^project/pyproject\\.toml\\.jinja$"],
       "matchStrings": [
-        "\"(?<depName>[a-zA-Z0-9._-]+)(?:[<>=!~^\\s]*)(?<currentValue>[0-9.]+)\""
+        "\"(?<depName>[a-z0-9-]+(?:\\[\\w+\\])?)\\s*(?:>=|==|~=|!=|<=|>|<)\\s*(?<currentValue>\\d+\\.\\d+(?:\\.\\d+)?)\""
       ],
       "datasourceTemplate": "pypi"
     }
