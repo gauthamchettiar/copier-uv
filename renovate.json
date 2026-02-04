@@ -1,0 +1,44 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:recommended"
+    ],
+    "lockFileMaintenance": {
+        "enabled": true
+    },
+    "schedule": [
+        "before 4am on Monday"
+    ],
+    "packageRules": [
+        {
+            "matchManagers": [
+                "pep621"
+            ],
+            "groupName": "python-dependencies"
+        },
+        {
+            "matchManagers": [
+                "github-actions"
+            ],
+            "groupName": "github-actions"
+        },
+        {
+            "matchFileNames": [
+                "project/pyproject.toml.jinja"
+            ],
+            "groupName": "python-template-dependencies"
+        }
+    ],
+    "customManagers": [
+        {
+            "customType": "regex",
+            "fileMatch": [
+                "^project/pyproject\\.toml\\.jinja$"
+            ],
+            "matchStrings": [
+                "\"(?<depName>[a-z0-9-]+)(?:\\[[\\w,]+\\])?\\s*(?:>=|==|~=|!=|<=|>|<)\\s*(?<currentValue>\\d+\\.\\d+(?:\\.\\d+)?)\""
+            ],
+            "datasourceTemplate": "pypi"
+        }
+    ]
+}

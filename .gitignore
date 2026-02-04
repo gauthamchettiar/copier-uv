@@ -43,3 +43,7 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
+
+# Repositories
+.git/
+.jj/
