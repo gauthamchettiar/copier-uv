@@ -32,8 +32,8 @@
     "customManagers": [
         {
             "customType": "regex",
-            "fileMatch": [
-                "^project/pyproject\\.toml\\.jinja$"
+            "managerFilePatterns": [
+                "/^project/pyproject\\.toml\\.jinja$/"
             ],
             "matchStrings": [
                 "\"(?<depName>[a-z0-9-]+)(?:\\[[\\w,]+\\])?\\s*(?:>=|==|~=|!=|<=|>|<)\\s*(?<currentValue>\\d+\\.\\d+(?:\\.\\d+)?)\""
