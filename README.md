@@ -1,5 +1,7 @@
 # copier-uv 
 
+[![CI](https://github.com/gauthamchettiar/copier-uv/actions/workflows/ci.yml/badge.svg)](https://github.com/gauthamchettiar/copier-uv/actions/workflows/ci.yml)
+
 A modern Copier template for Python projects.
 
 ## Features
