@@ -151,9 +151,6 @@ security-audit = {cmd = "pip-audit", help = "Run pip-audit security checks"}
 docs-serve = {cmd = "mkdocs serve --clean", help = "Serve documentation locally"}
 docs-build = {cmd = "mkdocs build --clean", help = "Build documentation site"}
 
-# Generation tasks
-gen-changelog = "git-changelog -o CHANGELOG.md"
-
 # Testing Tasks
 test-unit = {cmd = "pytest -m 'not integration'", help = "Run unit tests"} # all unmarked tests
 test-integration = {cmd = "pytest -m 'integration'", help = "Run integration tests"}
@@ -172,7 +169,19 @@ clean = {cmd = "rm -rf build dist .pytest_cache .mypy_cache .ruff_cache .pytest_
 pre-commit = {sequence = ["format", "lint-fix"], help = "Auto-fix formatting and lint issues (for pre-commit)"}
 check = {sequence = ["lint", "format-check", "type-check", "test-cov-check"], help = "Run all checks (linting, formatting, type checking)"}
 fix = {sequence = ["format", "lint-fix"], help = "Fix linting and formatting issues"}
-gen = {sequence = ["gen-changelog"], help = "Generate project files"}
 security = {sequence = ["security-bandit", "security-audit"], help = "Run all security checks"}
 docs = {sequence = ["test-cov-gen", "docs-build"], help = "Build the documentation site"}
 ci = {sequence = ["check", "security", "docs-build"], help = "Run all checks and tests for CI"}
+
+[tool.poe.tasks.release]
+help = "Create a release by tagging and generating changelog"
+args = [
+    { name = "version", positional = true, required = true }
+]
+sequence = [
+    { cmd = "git diff --exit-code", help = "Ensure there are no uncommitted changes" },
+    { cmd = "git-changelog --bump ${version} --in-place --output CHANGELOG.md", help = "Generate changelog" },
+    { cmd = "git add CHANGELOG.md", help = "Add changelog to git" },
+    { cmd = "git commit -m \"docs: update changelog for ${version}\"", help = "Commit changelog changes" },
+    { cmd = "git tag -a v${version} -m \"Release v${version}\"", help = "Create git tag" },
+]
