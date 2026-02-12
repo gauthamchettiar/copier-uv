@@ -258,7 +258,7 @@ def test_generated_project_structure(template_dir, temp_project):
         "CHANGELOG.md",
         "CONTRIBUTING.md",
         "CODE_OF_CONDUCT.md",
-        "mkdocs.yml",
+        "zensical.toml",
         ".copier-answers.yml",
     ]
     
@@ -311,8 +311,9 @@ def test_poe_docs_hello_example(generated_hello_project):
     )
     
     # Verify the docs site was built
-    assert (generated_hello_project / "site").exists(), "Documentation site not created"
-    assert (generated_hello_project / "site" / "index.html").exists(), "index.html not created"
+    assert (generated_hello_project / "public").exists(), "Documentation site not created"
+    assert (generated_hello_project / "public" / "index.html").exists(), "index.html not created"
+    assert (generated_hello_project / "public" / "api" / "hello" / "index.html").exists(), "API reference page not created"
 
 
 def test_poe_docs_calculator_example(generated_calculator_project):
@@ -330,8 +331,9 @@ def test_poe_docs_calculator_example(generated_calculator_project):
     )
     
     # Verify the docs site was built
-    assert (generated_calculator_project / "site").exists(), "Documentation site not created"
-    assert (generated_calculator_project / "site" / "index.html").exists(), "index.html not created"
+    assert (generated_calculator_project / "public").exists(), "Documentation site not created"
+    assert (generated_calculator_project / "public" / "index.html").exists(), "index.html not created"
+    assert (generated_calculator_project / "public" / "api" / "calculator" / "index.html").exists(), "API reference page not created"
 
 def test_poe_security_hello_example(generated_hello_project):
     """Test that poe security runs successfully on generated project with hello example."""
@@ -357,11 +359,11 @@ def test_poe_pre_commit_hello_example(generated_hello_project):
         capture_output=True,
         text=True,
     )
-    
+
     assert install_result.returncode == 0, (
         f"pre-commit install failed:\nSTDOUT:\n{install_result.stdout}\nSTDERR:\n{install_result.stderr}"
     )
-    
+
     # Run pre-commit on all files
     result = subprocess.run(
         ["uv", "run", "pre-commit", "run", "--all-files"],
@@ -369,7 +371,7 @@ def test_poe_pre_commit_hello_example(generated_hello_project):
         capture_output=True,
         text=True,
     )
-    
+
     assert result.returncode == 0, (
         f"pre-commit run failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
     )
@@ -384,11 +386,11 @@ def test_poe_pre_commit_calculator_example(generated_calculator_project):
         capture_output=True,
         text=True,
     )
-    
+
     assert install_result.returncode == 0, (
         f"pre-commit install failed:\nSTDOUT:\n{install_result.stdout}\nSTDERR:\n{install_result.stderr}"
     )
-    
+
     # Run pre-commit on all files
     result = subprocess.run(
         ["uv", "run", "pre-commit", "run", "--all-files"],
@@ -396,7 +398,7 @@ def test_poe_pre_commit_calculator_example(generated_calculator_project):
         capture_output=True,
         text=True,
     )
-    
+
     assert result.returncode == 0, (
         f"pre-commit run failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
     )

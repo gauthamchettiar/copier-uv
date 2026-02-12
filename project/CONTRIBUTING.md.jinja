@@ -1,19 +1,9 @@
 # Contributing
 
-Thanks for helping improve **{{ project_name }}**.
+Thanks for helping improve **{{ project_name }}**. Below you can find guidelines and tips for contributing to the project, including how to set up a development environment, run tests, and generate documentation.
 
-This project uses:
 
-- [`uv`](https://docs.astral.sh/uv/) for Python + dependency management
-- [`ruff`](https://docs.astral.sh/ruff/) for linting and formatting
-- [`pyright`](https://pypi.org/project/pyright/) for static type checking
-- [`pytest`](https://docs.pytest.org/en/stable/) for testing
-- [`poethepoet`](https://github.com/nat-n/poethepoet) tasks (run via `poe`)
-- [`pre-commit`](https://pre-commit.com/) to run fast checks before commits
-- [`bandit`](https://bandit.readthedocs.io/en/latest/) and [`pip-audit`](https://pypi.org/project/pip-audit/) for security checks
-- [`mkdocs`](https://www.mkdocs.org/) for documentation and [`Material for MkDocs`](https://squidfunk.github.io/mkdocs-material/) theme.
-
-## Quick start
+## Developer Quick Start
 
 ### Prerequisites
 
@@ -21,24 +11,21 @@ This project uses:
 - [`uv`](https://docs.astral.sh/uv/)
 
 ### Setup
-
-```bash
+```bash title="Install Dependencies"
 uv sync --all-groups
 ```
 
-Notes:
-
+**NOTE**:
 - `--all-groups` installs both the `dev` and `docs` dependency groups.
 - If you only want the development tooling (no docs), you can use:
+    ```bash
+    uv sync --group dev
+    ```
 
-```bash
-uv sync --group dev
-```
+### Tasks
+All common development tasks like linting, testing, and documentation are defined as [poethepoet](https://github.com/nat-n/poethepoet) tasks in `pyproject.toml`.
 
-> All the poe task below are defined in `pyproject.toml`.
-> You can either run them via `uv run poe <task>` or install `poethepoet` (`uv tool install poethepoet`) and run them via `poe <task>`.
-
-### All Poe Tasks
+Here' a quick reference of all available tasks:
 
 | Task         | Description                                                                  |
 |--------------|------------------------------------------------------------------------------|
@@ -46,135 +33,92 @@ uv sync --group dev
 | `fix`        | Run ruff formatting + lint fixes                                             |
 | `check`      | Run ruff (lint + format check), pyright (type-check), and pytest (unit tests)|
 | `security`   | Run bandit and pip-audit (security checks)                                   |
-| `docs`       | Run mkdocs (documentation)                                                   |
+| `docs`       | Run zensical (documentation)                                                 |
 | `gen`        | Run git-changelog (regenerate CHANGELOG.md from git history)                 |
 | `test-pyall` | Run pytest suite across all supported Python versions                        |
 | `pre-commit` | Run pre-commit hooks on all files (useful to test after pre-commit failure)  |
 | `ci`         | Full suite intended for CI (useful to test after CI failure)                 |
+| `release`    | Generate changelog and cut a new release tag                                 |
+
+```bash title="Run Lint, Type-Check, and Unit Tests"
+uv run poe check
+# or you can install poethepoet and run:
+uv tool install poethepoet
+poe check
+```
 
 ### Testing
-#### Multi-version testing
-Project uses `uv` with `--python` flag to create isolated environments for testing across multiple python versions.
+You should most probably be running `poe check` task, which includes unit tests. In order to run full test suite you can run -
 
-Run below command to run tests for inidividual python versions:
-```bash
+```bash title="Run Full Test Suite"
+poe test-pyall
+```
+
+This will spawn a separate environment for each supported Python version and run the tests in parallel.
+
+If you want to run tests for a specific Python version, you can run:
+
+```bash title="Run Tests for Specific Python Versions"
 {%- for v in supported_python_versions %}
 poe test-py{{ v | replace('.', '') }}
 {%- endfor %}
 ```
 
-or run below command to run tests across all supported python versions:
-```bash
-poe test-pyall
-```
-
-#### Tag based testing
-Tests can be tagged using `@pytest.mark.<tagname>` decorator.
-
-To run tests with specific tags:
-```bash
-pytest -m "<tagname>"
-```
-
-Project defines `integration` tag for integration tests.
-
-To run only integration tests:
-```bash
-poe test-integration
-```
-
-All untagged tests are considered unit tests.
-
-> If you are adding a new tag, make sure to update `test-unit` poe task in `pyproject.toml` to exclude the new tag.
-
 ### Documentation
+Documentation is built using [zensical](https://zensical.org/docs). To build docs locally, run:
 
-Documentation is built using [MkDocs](https://www.mkdocs.org/) and the [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) theme.
-
-```bash
+```bash title="Build Documentation"
 uv sync --group docs
 uv run poe docs
 ```
 
-To serve docs locally:
+To serve docs locally with live reload:
 
-```bash
+```bash title="Serve Documentation Locally"
 uv run poe docs-serve
 ```
 
-> `docs` task also runs unit tests before building the docs. This is required for coverage reporting in docs.
+This will start a local server at `http://localhost:8000` where you can view the documentation. Any changes to the docs will trigger an automatic rebuild and refresh in the browser.
 
-## Typical developer flow
+### Developer Workflow
+
+Here's how a typical development workflow might look like:
 
 1. Install dependencies:
-
-
-1. Install dependencies:
-
-```bash
-uv sync --all-groups
-```
-
-2. Install pre-commit hooks (once):
-
-```bash
-uv run pre-commit install
-```
-
+    ```bash
+    uv sync --all-groups
+    ```
+2. Install [pre-commit](https://pre-commit.com/) hooks (optional, but recommended):
+    ```bash
+    uv run pre-commit install
+    ```
 3. Make your change.
-
 4. Auto-fix formatting + lint issues:
-
-```bash
-uv run poe fix
-```
-
+    ```bash
+    uv run poe fix
+    ```
 5. Run the standard checks:
-
-```bash
-uv run poe check
-```
-
+    ```bash
+    uv run poe check
+    ```
 6. If your change touches docs, run:
-
-```bash
-uv run poe docs-build
-```
-
+    ```bash
+    uv run poe docs-build
+    ```
 7. If your change might affect integration behavior, run:
-
-```bash
-uv run poe test-integration
-```
-
+    ```bash
+    uv run poe test-integration
+    ```
 8. If you have added a new dependency, make sure to run:
+    ```bash
+    uv sync --all-groups
+    uv run poe security
+    ```
+9. If you are happy with changes, cut a new release tag -
+    ```bash title="Cut a New Release Tag"
+    poe release 0.1.3
+    ```
 
-```bash
-uv sync --all-groups
-uv run poe security
-```
-
-## pre-commit
-
-`pre-commit` runs quick, local checks before you commit.
-
-It includes basic file hygiene checks and runs `uv run poe pre-commit` (Ruff
-format + Ruff lint fixes).
-
-Install a one-time git hook to run pre-commit on every commit:
-
-```bash
-uv run pre-commit install
-```
-
-To run all hooks manually:
-
-```bash
-uv run pre-commit run --all-files
-```
-
-{# TODO: ## CI #}
-{# TODO: ## Reporting issues #}
 
 ## Code of conduct
 

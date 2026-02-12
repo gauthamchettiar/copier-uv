@@ -14,7 +14,7 @@ A modern Copier template for Python projects.
 - [detect-secrets](https://github.com/Yelp/detect-secrets?tab=readme-ov-file) pre-commit hook for scanning committed secrets.
 - [GitHub Actions](https://docs.github.com/en/actions) workflows for CI/CD automation.
 - [Dependabot](https://github.com/dependabot) configuration for automated dependency updates.
-- [MkDocs](https://www.mkdocs.org/) with [Material theme](https://squidfunk.github.io/mkdocs-material/) for documentation, including auto-generated API docs with [mkdocstrings](https://mkdocstrings.github.io/).
+- [Zensical](https://zensical.org/docs) for documentation, built on [MkDocs](https://www.mkdocs.org/) with [Material theme](https://squidfunk.github.io/mkdocs-material/), including auto-generated API docs with [mkdocstrings](https://mkdocstrings.github.io/).
 - [Poe the Poet](https://poethepoet.natn.io/) for task automation.
 
 ### Included Files
