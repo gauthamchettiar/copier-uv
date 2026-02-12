@@ -26,7 +26,13 @@
             "matchFileNames": [
                 "project/pyproject.toml.jinja"
             ],
-            "groupName": "python-template-dependencies"
+            "groupName": "template-python-dependencies"
+        },
+        {
+            "matchFileNames": [
+                "project/.github/workflows/*.jinja"
+            ],
+            "groupName": "template-github-actions"
         }
     ],
     "customManagers": [
@@ -39,6 +45,17 @@
                 "\"(?<depName>[a-z0-9-]+)(?:\\[[\\w,]+\\])?\\s*(?:>=|==|~=|!=|<=|>|<)\\s*(?<currentValue>\\d+\\.\\d+(?:\\.\\d+)?)\""
             ],
             "datasourceTemplate": "pypi"
+        },
+        {
+            "customType": "regex",
+            "description": "Update GitHub Actions in Jinja workflow templates",
+            "fileMatch": [
+                "^project/\\.github/workflows/.*\\.jinja$"
+            ],
+            "matchStrings": [
+                "uses:\\s+(?<depName>[^@\\s]+)@(?<currentValue>v?\\d+)"
+            ],
+            "datasourceTemplate": "github-tags"
         }
     ]
 }
