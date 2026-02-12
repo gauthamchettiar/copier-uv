@@ -7,8 +7,14 @@
         "enabled": true
     },
     "schedule": [
-        "before 4am on Monday"
+        "at any time"
     ],
+    "github-actions": {
+        "fileMatch": [
+            "^\\.github/workflows/.*\\.ya?ml$",
+            "^project/\\.github/workflows/.*\\.jinja$"
+        ]
+    },
     "packageRules": [
         {
             "matchManagers": [
@@ -45,17 +51,6 @@
                 "\"(?<depName>[a-z0-9-]+)(?:\\[[\\w,]+\\])?\\s*(?:>=|==|~=|!=|<=|>|<)\\s*(?<currentValue>\\d+\\.\\d+(?:\\.\\d+)?)\""
             ],
             "datasourceTemplate": "pypi"
-        },
-        {
-            "customType": "regex",
-            "description": "Update GitHub Actions in Jinja workflow templates",
-            "managerFilePatterns": [
-                "/^project/\\.github/workflows/.*\\.jinja$/"
-            ],
-            "matchStrings": [
-                "uses:\\s+(?<depName>[^@\\s]+)@(?<currentValue>v?\\d+)"
-            ],
-            "datasourceTemplate": "github-tags"
         }
     ]
 }
