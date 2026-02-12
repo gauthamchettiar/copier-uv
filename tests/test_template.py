@@ -54,16 +54,6 @@ def generated_hello_project(tmp_path_factory):
     
     assert git_init_result.returncode == 0, f"Failed to init git:\n{git_init_result.stderr}"
     
-    # Create and switch to a feature branch to avoid pre-commit branch protection
-    git_branch_result = subprocess.run(
-        ["git", "checkout", "-b", "feature/test"],
-        cwd=project_dir,
-        capture_output=True,
-        text=True,
-    )
-    
-    assert git_branch_result.returncode == 0, f"Failed to create branch:\n{git_branch_result.stderr}"
-    
     # Add all files and create initial commit for git-changelog
     subprocess.run(["git", "add", "."], cwd=project_dir, capture_output=True)
     subprocess.run(
@@ -118,16 +108,6 @@ def generated_calculator_project(tmp_path_factory):
     )
     
     assert git_init_result.returncode == 0, f"Failed to init git:\n{git_init_result.stderr}"
-    
-    # Create and switch to a feature branch to avoid pre-commit branch protection
-    git_branch_result = subprocess.run(
-        ["git", "checkout", "-b", "feature/test"],
-        cwd=project_dir,
-        capture_output=True,
-        text=True,
-    )
-    
-    assert git_branch_result.returncode == 0, f"Failed to create branch:\n{git_branch_result.stderr}"
     
     # Add all files and create initial commit for git-changelog
     subprocess.run(["git", "add", "."], cwd=project_dir, capture_output=True)
