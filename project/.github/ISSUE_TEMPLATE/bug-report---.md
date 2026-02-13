@@ -30,9 +30,9 @@ A one-line summary of the problem (what fails / where it fails).
 ## Steps to reproduce
 Provide a numbered list of steps which reliably reproduce the bug. Prefer a minimal example.
 
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 ## Expected behaviour
 What you expected to happen.
