@@ -1,23 +1,99 @@
-# {{ project_name }}
+<!-- Badges -->
+![CI](https://github.com/{{author_username}}/{{project_name | slugify}}/actions/workflows/ci.yml/badge.svg)
+![Docs](https://github.com/{{author_username}}/{{project_name | slugify}}/actions/workflows/docs.yml/badge.svg)
+[![Coverage](https://codecov.io/gh/{{ author_username }}/{{ project_name | slugify }}/branch/main/graph/badge.svg)](https://codecov.io/gh/{{ author_username }}/{{ project_name | slugify }})
+![Python](https://img.shields.io/badge/python-{{ supported_python_versions | join('%2C%20') }}-blue)
+[![Issues](https://img.shields.io/github/issues/{{ author_username }}/{{ project_name | slugify }}.svg)](https://github.com/{{ author_username }}/{{ project_name | slugify }}/issues)
+[![{{license}} License](https://img.shields.io/github/license/{{ author_username }}/{{ project_name | slugify }}.svg)](https://github.com/{{ author_username }}/{{ project_name | slugify }}/blob/master/LICENSE)
 
-{{ project_description }}
+<!-- Project header -->
+<div align="center">
+  <a href="https://github.com/{{ author_username }}/{{ project_name | slugify }}">
+    <img src="https://raw.githubusercontent.com/{{ author_username }}/{{ project_name | slugify }}/main/images/logo.png" alt="Logo" width="80" height="80">
+  </a>
 
-Python package `{{ project_slug }}` (managed with `uv`).
+  <h3 align="center">{{ project_name }}</h3>
 
-## Installation
+  <p align="center">
+    {{ project_description }}
+    <br />
+    <a href="https://{{ author_username }}.github.io/{{ project_name | slugify }}/"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/{{ author_username }}/{{ project_name | slugify }}">View Demo</a>
+    &middot;
+    <a href="https://github.com/{{ author_username }}/{{ project_name | slugify }}/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    &middot;
+    <a href="https://github.com/{{ author_username }}/{{ project_name | slugify }}/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+  </p>
+</div>
 
-### Using `uv`
+<!-- Add what your awesome project is all about here! -->
 
-Create a virtual environment, install dependencies, and install the project:
+## Getting Started
 
-```bash
-uv sync
-```
+To get a local copy up and running follow these simple example steps.
 
-This creates `.venv/` and installs the project in editable mode.
+### Prerequisites
+<!-- prerequisites marker start -->
+- [uv](https://docs.astral.sh/uv/)
+<!-- prerequisites marker end -->
 
-### Run
+### Installation
+<!-- installation marker start -->
+1. Clone the repo
+   ```sh
+   git clone https://github.com/{{ author_username }}/{{ project_name | slugify }}.git
+   ```
+2. Install the dependencies
+    ```sh
+    uv sync
+    ```
+3. Run the application
+    ```sh
+    uv run python -c "print('hello world!')"
+    ```
+<!-- installation marker end -->
 
-```bash
-uv run python -c "import {{ project_slug }}; print('{{ project_name }} is installed')"
-```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Usage
+<!-- usage marker start -->
+<!-- Use this space to explain how to use your project -->
+<!-- usage marker end -->
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Roadmap
+
+_Features you have planned to be added to project_
+
+- [x] Create a project
+- [x] Make sure it reaches an audience
+- [ ] Profit!
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## License
+
+Distributed under the {{ license }} License. See [LICENSE](LICENSE) for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Contact
+
+{{ author_name }} - {{ author_email }}
+
+Project Link: [https://github.com/{{ author_username }}/{{ project_name | slugify }}](https://github.com/{{ author_username }}/{{ project_name | slugify }})
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Acknowledgments
+
+Use this space to list resources you find helpful and would like to give credit to.
+
+* [Choose an Open Source License](https://choosealicense.com)
+* [Img Shields](https://shields.io)
+* [GitHub Pages](https://pages.github.com)
+* [Font Awesome](https://fontawesome.com)
+* [Zensical](https://zensical.org/docs)
