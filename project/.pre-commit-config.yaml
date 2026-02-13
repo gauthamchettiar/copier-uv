@@ -6,11 +6,16 @@ repos:
         stages: [pre-commit]
       - id: end-of-file-fixer
         stages: [pre-commit]
+      - id: mixed-line-ending
+        args: [--fix=lf]
+        stages: [pre-commit]
       - id: check-merge-conflict
       - id: check-yaml
       - id: check-toml
+      - id: check-json
       - id: check-added-large-files
         args: [--maxkb=1000]
+      - id: check-case-conflict
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
     hooks:
@@ -18,12 +23,10 @@ repos:
         args: [--baseline, .secrets.baseline, --exclude-lines, '^_commit:']
   - repo: local
     hooks:
-      - id: poe-pre-commit
-        name: poe pre-commit (format + lint-fix)
-        entry: uv run poe pre-commit
+      - id: ruff fixes
+        name: poe format (ruff check fix)
+        entry: uv run poe lint-fix
         language: system
-        pass_filenames: false
-        always_run: true
         stages: [pre-commit]
       - id: poe-check
         name: poe check (test + type + lint)
