@@ -14,7 +14,7 @@ A modern Copier template for Python projects.
 - [detect-secrets](https://github.com/Yelp/detect-secrets?tab=readme-ov-file) pre-commit hook for scanning committed secrets.
 - [GitHub Actions](https://docs.github.com/en/actions) workflows for CI/CD automation.
 - [Dependabot](https://github.com/dependabot) configuration for automated dependency updates.
-- [Zensical](https://zensical.org/docs) for documentation, built on [MkDocs](https://www.mkdocs.org/) with [Material theme](https://squidfunk.github.io/mkdocs-material/), including auto-generated API docs with [mkdocstrings](https://mkdocstrings.github.io/).
+- [Zensical](https://zensical.org/docs) for documentation, including auto-generated API docs with [mkdocstrings](https://mkdocstrings.github.io/).
 - [Poe the Poet](https://poethepoet.natn.io/) for task automation.
 
 ### Included Files
@@ -49,7 +49,7 @@ You can choose between two example modules to include in your project:
 To create a new project from this template, run:
 
 ```bash
-copier copy gh:gauthamchettiar/copier-uv <destination-folder>
+copier copy gh:gauthamchettiar/copier-uv <destination-folder> --trust
 ```
 
 ## Development
@@ -63,7 +63,7 @@ uv run pytest    # Run tests
 
 ## Questions
 
-When you run the copy command, you'll be asked the following questions:
+When you run the [copy](#usage) command, you'll be asked following questions:
 
 1. **What is your project name?**
    - Default: The destination folder name
@@ -120,3 +120,9 @@ When you run the copy command, you'll be asked the following questions:
     - Default: `hello`
     - Choices: `hello`, `calculator`
     - An example module to include in your project
+
+
+## Inspirations
+This template is inspired by and borrows ideas from the following projects:
+- https://github.com/pawamoy/copier-uv
+- https://github.com/tedivm/robs_awesome_python_template

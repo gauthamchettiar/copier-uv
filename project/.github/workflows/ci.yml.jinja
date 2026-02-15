@@ -2,7 +2,7 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  lint-and-test:
+  checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -16,15 +16,21 @@ jobs:
         run: uv python install
 
       - name: Install dependencies
-        run: uv sync --all-groups
+        run: uv sync --dev
 
       - name: Run pre-commit
         run: uv run pre-commit run --all-files
 
-      - name: Run CI task suite
-        run: uv run poe ci
+      - name: Run Coverage Checks
+        run: uv run poe test-cov-check
 
-  test:
+      - name: Run Security Checks
+        run: uv run poe security
+
+      - name: Check no diffs by pipeline
+        run: git status --porcelain
+
+  tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -41,7 +47,7 @@ jobs:
         run: uv python install {% raw %}${{ matrix.python-version }}{% endraw %}
 
       - name: Install dependencies
-        run: uv sync --all-groups
+        run: uv sync --dev
 
       - name: Run tests
         run: uv run pytest

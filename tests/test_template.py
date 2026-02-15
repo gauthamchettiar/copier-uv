@@ -382,25 +382,3 @@ def test_poe_pre_commit_calculator_example(generated_calculator_project):
     assert result.returncode == 0, (
         f"pre-commit run failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
     )
-
-
-def test_poe_gen_hello_example(generated_hello_project):
-    """Test that poe gen runs successfully on generated project with hello example."""
-    # Run poe gen in the generated project
-    result = subprocess.run(
-        ["uv", "run", "poe", "gen"],
-        cwd=generated_hello_project,
-        capture_output=True,
-        text=True,
-    )
-    
-    assert result.returncode == 0, (
-        f"poe gen failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
-    )
-    
-    # Verify CHANGELOG.md was generated/updated
-    assert (generated_hello_project / "CHANGELOG.md").exists(), "CHANGELOG.md not found"
-    changelog_content = (generated_hello_project / "CHANGELOG.md").read_text()
-    # git-changelog generates proper structure even with one commit
-    assert "# Changelog" in changelog_content, "CHANGELOG.md missing title"
-    assert "## Unreleased" in changelog_content, "CHANGELOG.md missing Unreleased section"

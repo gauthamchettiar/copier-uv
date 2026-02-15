@@ -23,15 +23,42 @@ repos:
         args: [--baseline, .secrets.baseline, --exclude-lines, '^_commit:']
   - repo: local
     hooks:
-      - id: ruff fixes
-        name: poe format (ruff check fix)
+      - id: lint-fix-diff-only
+        types: [python]
+        language: system
+        name: poe lint-fix (ruff check fix)
         entry: uv run poe lint-fix
-        language: system
         stages: [pre-commit]
-      - id: poe-check
-        name: poe check (test + type + lint)
-        entry: uv run poe check
+      - id: format-diff-only
         language: system
+        types: [python]
+        name: poe format (ruff format)
+        entry: uv run poe format
+        stages: [pre-commit]
+      - id: type-check-diff-only
+        language: system
+        types: [python]
+        name: poe type-check (pyright)
+        entry: uv run poe type-check
+        stages: [pre-commit]
+      - id: lint-all
+        language: system
+        name: poe lint (ruff check)
+        entry: uv run poe lint
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+      - id: format-check-all
+        language: system
+        name: poe format-check (ruff check --fix=false)
+        entry: uv run poe format-check
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+      - id: type-check-all
+        language: system
+        name: poe type-check (pyright)
+        entry: uv run poe type-check
         pass_filenames: false
         always_run: true
         stages: [pre-push]

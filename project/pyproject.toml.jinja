@@ -115,7 +115,6 @@ venv = ".venv"
 dev = [
     "bandit>=1.9.3",
     "detect-secrets>=1.5.0",
-    "git-changelog>=2.7.1",
     "pip-audit>=2.10.0",
     "poethepoet>=0.41.0",
     "pre-commit>=4.5.1",
@@ -132,56 +131,112 @@ docs = [
 [tool.poe]
 executor.type = "uv"
 
-[tool.poe.tasks]
-# Linting, Formatting and Type Checking Tasks
-lint = {cmd =  "ruff check src tests", help = "Run ruff lint checks"}
-lint-fix = {cmd = "ruff check src tests --fix", help = "Fix ruff lint issues"}
 
-format = {cmd = "ruff format src tests", help = "Format code using ruff"}
-format-check = {cmd = "ruff format src tests --check", help = "Check code formatting using ruff"}
+# Linting, formatting and type checking tasks
+[tool.poe.tasks.lint]
+cmd = "ruff check ${target_dir}"
+help = "Run ruff lint checks"
+args = { target_dir = { multiple = true, default = "src tests", positional = true }}
 
-type-check = {cmd = "pyright", help = "Run type checking using pyright"}
+[tool.poe.tasks.lint-fix]
+cmd = "ruff check ${target_dir} --fix"
+help = "Fix ruff lint issues"
+args = { target_dir = { multiple = true, default = "src tests", positional = true }}
+
+[tool.poe.tasks.format]
+cmd = "ruff format ${target_dir}"
+help = "Format code using ruff"
+args = { target_dir = { multiple = true, default = "src tests", positional = true }}
+
+[tool.poe.tasks.format-check]
+cmd = "ruff format ${target_dir} --check"
+help = "Check code formatting using ruff"
+args = { target_dir = { multiple = true, default = "src tests", positional = true }}
+
+[tool.poe.tasks.type-check]
+cmd = "pyright ${target_dir}"
+help = "Run type checking using pyright"
+args = { target_dir = { multiple = true, default = "src tests", positional = true }}
 
 # Security Tasks
-security-bandit = {cmd = "bandit -r src -ll", help = "Run bandit security checks"}
-security-audit = {cmd = "pip-audit", help = "Run pip-audit security checks"}
+[tool.poe.tasks.security-bandit]
+cmd = "bandit -r src -ll"
+help = "Run bandit security checks"
+
+[tool.poe.tasks.security-audit]
+cmd = "pip-audit"
+help = "Run pip-audit security checks"
 
 # Documentation Tasks
-docs-serve = {cmd = "zensical serve", help = "Serve documentation locally"}
-docs-build = {cmd = "zensical build", help = "Build documentation site"}
+[tool.poe.tasks.docs-serve]
+cmd = "uv run --group docs zensical serve"
+help = "Serve documentation locally"
 
-# Testing Tasks
-test-unit = {cmd = "pytest -m 'not integration'", help = "Run unit tests"} # all unmarked tests
-test-integration = {cmd = "pytest -m 'integration'", help = "Run integration tests"}
+[tool.poe.tasks.docs-build]
+cmd = "uv run --group docs zensical build"
+help = "Build documentation site"
 
-test-cov-check = {cmd = "pytest --cov={{ project_slug }} --cov-report=html:htmlcov --cov-report=term-missing --cov-fail-under=80", help = "Run tests with coverage"}
-test-cov-gen = {cmd = "pytest --cov={{ project_slug }} --cov-report=html:htmlcov --cov-report=term-missing", help = "Run tests to generate coverage report"}
+[tool.poe.tasks.docs-clean]
+help = "Clean documentation build artifacts"
+cmd = "uv run --group dev python -c \"from poethepoet.scripts import rm; rm('public')\""
+
+[tool.poe.tasks.gen-changelog]
+[tool.poe.tasks.test-unit]
+cmd = "pytest -m 'not integration'"
+help = "Run unit tests"
+
+[tool.poe.tasks.test-integration]
+cmd = "pytest -m 'integration'"
+help = "Run integration tests"
+
+[tool.poe.tasks.test]
+cmd = "pytest"
+help = "Run all tests"
+
+[tool.poe.tasks.test-cov-check]
+cmd = "pytest --cov={{ project_slug }} --cov-report=html:htmlcov --cov-report=term-missing --cov-fail-under=80"
+help = "Run tests with coverage"
+
+[tool.poe.tasks.test-cov-gen]
+cmd = "pytest --cov={{ project_slug }} --cov-report=html:htmlcov --cov-report=term-missing"
+help = "Run tests to generate coverage report"
 
 # Multi Version Testing
 {%- for v in supported_python_versions %}
-test-py{{ v | replace('.', '') }} = { cmd = "pytest", executor = { isolated = true, python = "{{ v }}" } }
+[tool.poe.tasks.test-py{{ v | replace('.', '') }}]
+cmd = "pytest"
+help = "Run tests on Python {{ v }}"
+executor = { isolated = true, python = "{{ v }}" }
 {%- endfor %}
-test-pyall = { parallel = [{%- for v in supported_python_versions %}"test-py{{ v | replace('.', '') }}"{{ "," if not loop.last }}{%- endfor %}] }
 
-# Aggregate Tasks
-clean = {cmd = "rm -rf build dist .pytest_cache .mypy_cache .ruff_cache .pytest_cache .tox .venv site/", help = "Clean build artifacts"}
-pre-commit = {sequence = ["format", "lint-fix"], help = "Auto-fix formatting and lint issues (for pre-commit)"}
-check = {sequence = ["lint", "format-check", "type-check", "test-cov-check"], help = "Run all checks (linting, formatting, type checking)"}
-fix = {sequence = ["format", "lint-fix"], help = "Fix linting and formatting issues"}
-security = {sequence = ["security-bandit", "security-audit"], help = "Run all security checks"}
-docs = {sequence = ["docs-build"], help = "Build the documentation site"}
-ci = {sequence = ["check", "security", "docs-build"], help = "Run all checks and tests for CI"}
-gen = {cmd = "git-changelog --in-place --output CHANGELOG.md", help = "Generate changelog from git commits"}
+[tool.poe.tasks.clean]
+help = "Clean project directories using inline python"
+cmd = "python -c \"from poethepoet.scripts import rm; rm('.pytest_cache', '__pycache__', 'build', 'dist', 'htmlcov', '.mypy_cache', '.ruff_cache', 'public')\""
 
-[tool.poe.tasks.release]
-help = "Create a release by tagging and generating changelog"
-args = [
-    { name = "version", positional = true, required = true }
+# Agregate tasks
+[tool.poe.tasks.check]
+sequence = ["lint", "format-check", "type-check", "test-cov-check"]
+help = "Run all checks (linting, formatting, type checking)"
+
+[tool.poe.tasks.fix]
+sequence = ["lint-fix", "format"]
+help = "Fix linting and formatting issues"
+
+[tool.poe.tasks.test-pyall]
+parallel = [
+{%- for v in supported_python_versions %}
+    "test-py{{ v | replace('.', '') }}",
+{%- endfor %}
 ]
+help = "Run tests on all supported Python versions"
+
+[tool.poe.tasks.security]
+sequence = ["security-bandit", "security-audit"]
+help = "Run all security checks"
+
+[tool.poe.tasks.docs]
+help = "Clean specific folders then build docs"
 sequence = [
-    { cmd = "git diff --exit-code", help = "Ensure there are no uncommitted changes" },
-    { cmd = "git-changelog --bump ${version} --in-place --output CHANGELOG.md", help = "Generate changelog" },
-    { cmd = "git add CHANGELOG.md", help = "Add changelog to git" },
-    { cmd = "git commit -m \"docs: update changelog for ${version}\"", help = "Commit changelog changes" },
-    { cmd = "git tag -a v${version} -m \"Release v${version}\"", help = "Create git tag" },
+    { ref = "docs-clean" },
+    { ref = "docs-build" }
 ]
