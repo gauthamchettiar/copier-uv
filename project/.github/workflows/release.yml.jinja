@@ -1,0 +1,119 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Bump type (leave empty if providing version)"
+        required: false
+        type: choice
+        options:
+          - auto
+          - major
+          - minor
+          - patch
+      version:
+        description: "Semantic version (e.g. 1.4.0, leave empty if using bump)"
+        required: false
+
+      generate_release_notes:
+        description: "Whether to generate release notes from the changelog"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate inputs
+        run: |
+          BUMP="{% raw %}${{ github.event.inputs.bump }}{% endraw %}"
+          VERSION="{% raw %}${{ github.event.inputs.version }}{% endraw %}"
+
+          if [[ -n "$BUMP" && -n "$VERSION" ]]; then
+            echo "Error: Please provide either 'bump' or 'version', not both"
+            exit 1
+          fi
+
+          if [[ -z "$BUMP" && -z "$VERSION" ]]; then
+            echo "Error: Please provide either 'bump' or 'version'"
+            exit 1
+          fi
+
+          if [[ -n "$VERSION" && ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Invalid semantic version format"
+            exit 1
+          fi
+
+      - uses: astral-sh/setup-uv@v7
+
+      - name: Install dependencies
+        run: |
+            uv python install
+            uv tool install git-changelog
+
+      - name: Bump version and generate changelog
+        run: |
+          BUMP="{% raw %}${{ github.event.inputs.bump }}{% endraw %}"
+          VERSION="{% raw %}${{ github.event.inputs.version }}{% endraw %}"
+
+          if [[ -n "$VERSION" ]]; then
+            # Use provided version with v prefix
+            git-changelog --bump "v$VERSION"
+          else
+            # Use bump type
+            git-changelog --bump "$BUMP"
+          fi
+
+          # Get the bumped version
+          NEW_VERSION=$(git-changelog --bumped-version)
+          # Strip the 'v' prefix if present
+          NEW_VERSION=${NEW_VERSION#v}
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+          # Update pyproject.toml with the new version
+          sed -i "s/^version = .*/version = \"$NEW_VERSION\"/" pyproject.toml
+
+      - name: Commit changelog and create release tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add pyproject.toml CHANGELOG.md
+          git commit -m "chore(release): v$NEW_VERSION"
+          git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
+          git push origin HEAD
+          git push origin "v$NEW_VERSION"
+
+      - name: Generate release notes
+        if: github.event.inputs.generate_release_notes == 'true'
+        run: |
+          echo "Generating release notes..."
+          git-changelog --release-notes > release-notes.md
+
+      - name: Check if release notes exist
+        id: check_notes
+        run: |
+          if [[ -f "release-notes.md" ]]; then
+            echo "release_notes_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "release_notes_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v{% raw %}${{ env.NEW_VERSION }}{% endraw %}
+          body_path: {% raw %}${{ steps.check_notes.outputs.release_notes_exists == 'true' && 'release-notes.md' || '' }}{% endraw %}
+          generate_release_notes: {% raw %}${{ steps.check_notes.outputs.release_notes_exists == 'false' }}{% endraw %}

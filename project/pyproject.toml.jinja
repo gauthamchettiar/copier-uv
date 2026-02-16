@@ -97,6 +97,17 @@ markers = [
     "integration: integration tests",
 ]
 
+[tool.git-changelog]
+convention = "angular"
+template = "keepachangelog"
+marker-line = "<!-- insertion marker -->"
+output = "CHANGELOG.md"
+in-place = true
+parse-trailers = true
+parse-refs = false
+sections = ["build", "chore", "ci", "deps", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+bump = "auto"
+
 [tool.pyright]
 include = ["src"]
 
@@ -180,7 +191,6 @@ help = "Build documentation site"
 help = "Clean documentation build artifacts"
 cmd = "uv run --group dev python -c \"from poethepoet.scripts import rm; rm('public')\""
 
-[tool.poe.tasks.gen-changelog]
 [tool.poe.tasks.test-unit]
 cmd = "pytest -m 'not integration'"
 help = "Run unit tests"
