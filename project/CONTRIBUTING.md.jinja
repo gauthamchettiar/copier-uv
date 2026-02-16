@@ -22,6 +22,16 @@ uv sync --all-groups
     uv sync --group dev
     ```
 
+### Devcontainer / Codespaces
+
+This repository includes a devcontainer so you can open it in GitHub Codespaces or VS Code Remote - Containers. The container uses Python {{ min_python_version }}+, installs `uv`, runs `uv sync --all-groups` on first creation, and installs `pre-commit` hooks automatically.
+
+Open the repo in Codespaces or choose _Reopen in Container_ in VS Code. After the container finishes building, run:
+
+```bash
+uv run poe check
+```
+
 ### Tasks
 All common development tasks like linting, testing, and documentation are defined as [poethepoet](https://github.com/nat-n/poethepoet) tasks in `pyproject.toml`.
 
