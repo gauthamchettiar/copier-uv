@@ -34,9 +34,13 @@ jobs:
         run: |
           if [[ {% raw %}${{ github.event_name }}{% endraw %} == 'pull_request' ]]; then
             BASE_SHA={% raw %}${{ github.event.pull_request.base.sha }}{% endraw %}
+            # Also check if the PR title follows the conventional commit format
+            echo {% raw %}${{ github.event.pull_request.title }}{% endraw %} > /tmp/commit_msg.text
+            uv run --with conventional-pre-commit conventional-pre-commit /tmp/commit_msg.text || exit 1
           else
             BASE_SHA={% raw %}${{ github.event.before }}{% endraw %}
           fi
+
           # Validate each commit message follows the conventional commit format
           git log --format="%s" ${BASE_SHA}..{% raw %}${{ github.sha }}{% endraw %} | while read -r msg; do
             echo "Validating: $msg"
