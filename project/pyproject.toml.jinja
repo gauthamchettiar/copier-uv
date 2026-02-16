@@ -50,6 +50,12 @@ target-version = "py{{ min_python_version | replace('.', '') }}"
 line-length = 90
 show-fixes = true
 respect-gitignore = true
+extend-exclude = [
+    "build",
+    "dist",
+    ".venv",
+    "*.pypi"
+]
 
 [tool.ruff.lint]
 select = [
@@ -116,11 +122,15 @@ line-ending = "auto"
 
 [tool.pytest.ini_options]
 minversion = "9.0"
-addopts = "-ra -q"
+addopts = "-ra -q --strict-markers"
 testpaths = ["tests"]
 python_files = "test_*.py"
 python_classes = "Test*"
 python_functions = "test_*"
+xfail_strict = true
+filterwarnings = [
+    "error",
+]
 
 # when you add markers here, remember to
 #   add below in poe test-unit task as well
@@ -255,6 +265,10 @@ executor = { isolated = true, python = "{{ v }}" }
 [tool.poe.tasks.clean]
 help = "Clean project directories using inline python"
 cmd = "python -c \"from poethepoet.scripts import rm; rm('.pytest_cache', '__pycache__', 'build', 'dist', 'htmlcov', '.mypy_cache', '.ruff_cache', 'public')\""
+
+[tools.poe.tasks.setup]
+help = "Set up the development environment"
+cmd = "uv run --with pre-commit pre-commit install --install-hooks"
 
 # Agregate tasks
 [tool.poe.tasks.check]
