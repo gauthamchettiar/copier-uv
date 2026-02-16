@@ -9,6 +9,37 @@ authors = [
 ]
 requires-python = ">= {{ min_python_version }}"
 dependencies = []
+keywords = []
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+{%- if license == "MIT" %}
+    "License :: OSI Approved :: MIT License",
+{%- elif license == "Apache-2.0" %}
+    "License :: OSI Approved :: Apache Software License",
+{%- elif license == "BSD-3-Clause" %}
+    "License :: OSI Approved :: BSD License",
+{%- elif license == "GPL-3.0" %}
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+{%- elif license == "MPL-2.0" %}
+    "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+{%- endif %}
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+{%- for version in supported_python_versions %}
+    "Programming Language :: Python :: {{ version }}",
+{%- endfor %}
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://{{ repository_provider }}.com/{{ repository_namespace }}/{{ repository_name }}"
+Repository = "https://{{ repository_provider }}.com/{{ repository_namespace }}/{{ repository_name }}"
+Documentation = "https://{{ repository_namespace }}.{{ repository_provider }}.io/{{ repository_name }}"
+Changelog = "https://{{ repository_provider }}.com/{{ repository_namespace }}/{{ repository_name }}/blob/main/CHANGELOG.md"
+Issues = "https://{{ repository_provider }}.com/{{ repository_namespace }}/{{ repository_name }}/issues"
 
 [build-system]
 requires = ["hatchling"]
@@ -109,7 +140,7 @@ sections = ["build", "chore", "ci", "deps", "docs", "feat", "fix", "perf", "refa
 bump = "auto"
 
 [tool.pyright]
-include = ["src"]
+include = ["src", "tests"]
 
 pythonVersion = "{{ min_python_version }}"
 typeCheckingMode = "strict"
@@ -118,6 +149,9 @@ reportMissingImports = true
 reportMissingTypeStubs = false
 reportUnusedVariable = true
 reportUnusedFunction = true
+reportUnnecessaryTypeIgnoreComment = true
+reportPrivateUsage = true
+reportConstantRedefinition = true
 
 venvPath = "."
 venv = ".venv"
@@ -125,7 +159,6 @@ venv = ".venv"
 [dependency-groups]
 dev = [
     "bandit>=1.9.3",
-    "detect-secrets>=1.5.0",
     "pip-audit>=2.10.0",
     "poethepoet>=0.41.0",
     "pre-commit>=4.5.1",
