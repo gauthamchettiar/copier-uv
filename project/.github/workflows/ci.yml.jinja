@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -27,6 +29,20 @@ jobs:
 
       - name: Run Security Checks
         run: uv run poe security
+
+      - name: Check conventional commit
+        run: |
+          if [[ {% raw %}${{ github.event_name }}{% endraw %} == 'pull_request' ]]; then
+            BASE_SHA={% raw %}${{ github.event.pull_request.base.sha }}{% endraw %}
+          else
+            BASE_SHA={% raw %}${{ github.event.before }}{% endraw %}
+          fi
+          # Validate each commit message follows the conventional commit format
+          git log --format="%s" ${BASE_SHA}..{% raw %}${{ github.sha }}{% endraw %} | while read -r msg; do
+            echo "Validating: $msg"
+            echo "$msg" > /tmp/commit_msg.text
+            uv run --with conventional-pre-commit conventional-pre-commit /tmp/commit_msg.text || exit 1
+          done
 
       - name: Check no diffs by pipeline
         run: git status --porcelain
