@@ -76,6 +76,7 @@ def expected_common_files():
     return set([
         ".pre-commit-config.yaml",
         ".copier-answers.yml",
+        ".devcontainer/devcontainer.json",
         ".secrets.baseline",
         ".gitignore",
         ".python-version",
